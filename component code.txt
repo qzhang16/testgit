@@ -1,0 +1,58 @@
+# Class name MUST be same as node name.
+from data_pipeline import ExecutePipeline
+from datetime import datetime
+import time
+import json
+
+class GenerateData(ExecutePipeline):
+    def __init__(self, config, logger):
+        self.config = config
+        self.logger = logger
+        super().__init__(self.config, self.logger)
+
+    def run(self):
+        try:
+            self.logger.debug("INTO: test")
+            # Your code goes here
+            # PLease don't change this definition name
+            # use self.write_data instead of return. Response should always be json serialized
+        
+            value = 11 
+            while True:
+                timestamp = int(datetime.now().timestamp())
+                timestamp = 1000 * timestamp
+                self.logger.debug(timestamp)
+                value = value + 1
+                
+                if value > 100000:
+                    value = 0
+
+                se_data= {
+                    "data": {
+                        "l1_100$l2_101$l3_102$l4_103$l5_104$l6_105$a_106$tag_100": {
+                            "val": value,
+                            "dq": 1,
+                            "ta": ""
+                        }
+                    },
+                    "site_id": "l1_100",
+                    "gw_id": "",
+                    "pd_id": "",
+                    "retain_flag": False,
+                    "timestamp": timestamp,
+                    "msg_id": 1,
+                    "ver": 1.2,
+                    "a_id": "",
+                    "d_id": "",
+                    "p_id": "project_103"
+                }
+                msg = json.dumps(se_data)
+                self.logger.debug(msg)
+                self.write_data(json.dumps(se_data))
+                time.sleep(5)
+        
+        except Exception as e:
+            self.logger.exception(f"Some error occurred {str(e)}")
+            self.write_data(json.dumps(""))
+        
+
